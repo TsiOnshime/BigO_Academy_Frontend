@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #F5F5F5;
+  --surface: #FFFFFF;
+  --text: #1A1A1A;
+  --text-muted: #6B7280;
+  --primary: #D32F2F;
+  --primary-hover: #B71C1C;
+}
+
+.dark {
+  --background: #1A1A1A;
+  --surface: #242424;
+  --text: #F5F5F5;
+  --text-muted: #9CA3AF;
+  --primary: #D32F2F;
+  --primary-hover: #B71C1C;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text);
+}
