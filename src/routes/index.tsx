@@ -4,6 +4,7 @@ import ProtectedRoute from "./ProtectedRoute";
 // Auth pages
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
+import ForgotPasswordPage from "../pages/auth/ForgotPasswordPage";
 
 // Placeholder dashboard pages (you'll build these after auth)
 import StudentDashboard from "../pages/student/DashboardPage";
@@ -16,7 +17,7 @@ export default function AppRoutes() {
       {/* Public routes */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       {/* Student routes */}
       <Route
         path="/dashboard"
@@ -43,6 +44,7 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={["ADMIN"]}>
             <AdminDashboard />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           </ProtectedRoute>
         }
       />
