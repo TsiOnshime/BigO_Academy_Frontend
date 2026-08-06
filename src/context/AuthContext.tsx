@@ -13,7 +13,6 @@ import type {
   AuthResponse,
 } from "../types/auth";
 
-
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
@@ -25,14 +24,40 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/**
+ * Turn this OFF once the backend auth is ready.
+ */
+const DEV_LOGIN = true;
+
+// Change this role to test different dashboards.
+const DEV_USER: User = {
+  userId: "1",
+  fullName: "Meron Tadesse",
+  email: "teacher@a2sv.org",
+  role: "TEACHER",
+};
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // On app load — restore user from localStorage if token exists
   useEffect(() => {
+    // Development mode
+    if (DEV_LOGIN) {
+      setUser(DEV_USER);
+
+      localStorage.setItem("accessToken", "dev-token");
+      localStorage.setItem("refreshToken", "dev-refresh-token");
+      localStorage.setItem("user", JSON.stringify(DEV_USER));
+
+      setIsLoading(false);
+      return;
+    }
+
+    // Production mode
     const savedUser = localStorage.getItem("user");
     const token = localStorage.getItem("accessToken");
+
     if (savedUser && token) {
       try {
         setUser(JSON.parse(savedUser));
@@ -40,33 +65,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.clear();
       }
     }
+
     setIsLoading(false);
   }, []);
 
   const login = useCallback(async (data: LoginRequest) => {
     const response = await authApi.post<AuthResponse>("/auth/login/", data);
+
     const { user, accessToken, refreshToken } = response.data;
+
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
     localStorage.setItem("user", JSON.stringify(user));
+
     setUser(user);
   }, []);
 
   const register = useCallback(async (data: RegisterRequest) => {
     const response = await authApi.post<AuthResponse>("/auth/register/", data);
+
     const { user, accessToken, refreshToken } = response.data;
+
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
     localStorage.setItem("user", JSON.stringify(user));
+
     setUser(user);
   }, []);
 
   const logout = useCallback(async () => {
+    if (DEV_LOGIN) {
+      setUser(null);
+      return;
+    }
+
     try {
       const refreshToken = localStorage.getItem("refreshToken");
       await authApi.post("/auth/logout/", { refreshToken });
     } catch {
-      // Even if the server call fails, clear local state
+      // Ignore API errors
     } finally {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
@@ -93,8 +130,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
+
   if (!context) {
     throw new Error("useAuth must be used inside AuthProvider");
   }
+
   return context;
 }

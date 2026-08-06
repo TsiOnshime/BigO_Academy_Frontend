@@ -16,6 +16,10 @@ import StudentProgress from "../pages/student/ProgressPage";
 
 // Teacher
 import TeacherDashboard from "../pages/teacher/DashboardPage";
+import TeacherStudentsPage from "../pages/teacher/StudentsPage";
+import TeacherMentorshipPage from "../pages/teacher/MentorshipPage";
+import TeacherProfilePage from "../pages/teacher/ProfilePage";
+import TeacherAttendancePage from "../pages/teacher/AttendancePage";
 
 // Admin
 import AdminDashboard from "../pages/admin/DashboardPage";
@@ -95,6 +99,38 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={["TEACHER"]}>
             <TeacherDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/teacher/students"
+        element={
+          <ProtectedRoute allowedRoles={["TEACHER"]}>
+            <TeacherStudentsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/teacher/mentorship"
+        element={
+          <ProtectedRoute allowedRoles={["TEACHER"]}>
+            <TeacherMentorshipPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/teacher/attendance"
+        element={
+          <ProtectedRoute allowedRoles={["TEACHER"]}>
+            <TeacherAttendancePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/teacher/profile"
+        element={
+          <ProtectedRoute allowedRoles={["TEACHER"]}>
+            <TeacherProfilePage />
           </ProtectedRoute>
         }
       />
