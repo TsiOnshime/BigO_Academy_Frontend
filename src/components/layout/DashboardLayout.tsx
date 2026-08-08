@@ -15,6 +15,8 @@ import {
   X,
   GraduationCap,
   CreditCard,
+  BarChart2
+
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -67,7 +69,16 @@ const adminNav: NavItem[] = [
     icon: <GraduationCap size={20} />,
   },
   { label: "Cohorts", path: "/admin/cohorts", icon: <BookOpen size={20} /> },
-  { label: "Payments", path: "/admin/payments", icon: <Award size={20} /> },
+  {
+    label: "Payments",
+    path: "/admin/payments",
+    icon: <CreditCard size={20} />,
+  },
+  {
+    label: "Analytics",
+    path: "/admin/analytics",
+    icon: <BarChart2 size={20} />,
+  },
   { label: "Security", path: "/admin/security", icon: <Shield size={20} /> },
   { label: "Settings", path: "/admin/settings", icon: <Settings size={20} /> },
 ];

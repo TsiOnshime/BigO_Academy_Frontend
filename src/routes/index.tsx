@@ -23,6 +23,13 @@ import TeacherAttendancePage from "../pages/teacher/AttendancePage";
 
 // Admin
 import AdminDashboard from "../pages/admin/DashboardPage";
+import AdminStudentsPage from "../pages/admin/StudentsPage";
+import AdminTeachersPage from "../pages/admin/TeachersPage";
+import AdminCohortsPage from "../pages/admin/CohortsPage";
+import AdminPaymentsPage from "../pages/admin/PaymentsPage";
+import AdminAnalyticsPage from "../pages/admin/AnalyticsPage";
+import AdminSecurityPage from "../pages/admin/SecurityPage";
+
 
 // Payment
 import PaymentPage from "../pages/payment/PaymentPage";
@@ -141,6 +148,54 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={["ADMIN"]}>
             <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/students"
+        element={
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <AdminStudentsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/teachers"
+        element={
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <AdminTeachersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/cohorts"
+        element={
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <AdminCohortsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/payments"
+        element={
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <AdminPaymentsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/analytics"
+        element={
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <AdminAnalyticsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/security"
+        element={
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <AdminSecurityPage />
           </ProtectedRoute>
         }
       />
