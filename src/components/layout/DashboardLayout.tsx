@@ -14,6 +14,7 @@ import {
   Menu,
   X,
   GraduationCap,
+  CreditCard,
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -34,6 +35,7 @@ const studentNav: NavItem[] = [
   { label: "Messages", path: "/messages", icon: <MessageSquare size={20} /> },
   { label: "Progress", path: "/progress", icon: <TrendingUp size={20} /> },
   { label: "Certificates", path: "/certificates", icon: <Award size={20} /> },
+  { label: "Payment", path: "/payment", icon: <CreditCard size={20} /> },
 ];
 
 const teacherNav: NavItem[] = [

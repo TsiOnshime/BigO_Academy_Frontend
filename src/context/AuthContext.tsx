@@ -35,6 +35,10 @@ const DEV_USER: User = {
   fullName: "Meron Tadesse",
   email: "teacher@a2sv.org",
   role: "TEACHER",
+  status: "ACTIVE",              // Added missing required field
+  mustChangePassword: false,     // Added missing required field
+  createdAt: new Date().toISOString(), // Added missing required field
+  updatedAt: new Date().toISOString()  // Added missing required field
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
