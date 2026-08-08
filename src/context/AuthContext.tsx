@@ -34,7 +34,7 @@ const DEV_USER: User = {
   userId: "1",
   fullName: "Meron Tadesse",
   email: "teacher@a2sv.org",
-  role: "ADMIN",
+  role: "STUDENT",
   status: "ACTIVE",
   mustChangePassword: false,
   createdAt: new Date().toISOString(),

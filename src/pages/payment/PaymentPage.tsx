@@ -45,6 +45,90 @@ function formatMonth(month: string) {
   });
 }
 
+/**
+ * Turn this OFF once the payment-service backend is running and reachable.
+ * While true, the page renders with fake data instead of calling the API,
+ * so you can preview the UI without the backend up.
+ */
+const DEV_MOCK_DATA = true;
+
+function buildMockData() {
+  const month = currentMonth();
+  const mockPayments: StudentPayment[] = [
+    {
+      id: "mock-1",
+      studentId: "1",
+      paymentMonth: month,
+      amount: 1500,
+      currency: "ETB",
+      status: "PENDING",
+      referenceNumber: "CBE-3391827",
+      note: null,
+      verifiedBy: null,
+      verifiedAt: null,
+      dueDate: endOfMonth(month),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "mock-2",
+      studentId: "1",
+      paymentMonth: "2026-07",
+      amount: 1500,
+      currency: "ETB",
+      status: "PAID",
+      referenceNumber: "CBE-3301122",
+      note: null,
+      verifiedBy: "admin-1",
+      verifiedAt: "2026-07-04T10:15:00Z",
+      dueDate: "2026-07-05",
+      createdAt: "2026-07-02T08:00:00Z",
+      updatedAt: "2026-07-04T10:15:00Z",
+    },
+    {
+      id: "mock-3",
+      studentId: "1",
+      paymentMonth: "2026-06",
+      amount: 1500,
+      currency: "ETB",
+      status: "OVERDUE",
+      referenceNumber: null,
+      note: null,
+      verifiedBy: null,
+      verifiedAt: null,
+      dueDate: "2026-06-05",
+      createdAt: "2026-06-01T08:00:00Z",
+      updatedAt: "2026-06-06T00:00:00Z",
+    },
+    {
+      id: "mock-4",
+      studentId: "1",
+      paymentMonth: "2026-05",
+      amount: 1500,
+      currency: "ETB",
+      status: "PAID",
+      referenceNumber: "TB-9981234",
+      note: null,
+      verifiedBy: "admin-1",
+      verifiedAt: "2026-05-03T09:20:00Z",
+      dueDate: "2026-05-05",
+      createdAt: "2026-05-01T08:00:00Z",
+      updatedAt: "2026-05-03T09:20:00Z",
+    },
+  ];
+
+  const mockSubscription: SubscriptionStatus = {
+    studentId: "1",
+    subscriptionStatus: "PENDING",
+    currentMonthPaid: false,
+    nextDueDate: endOfMonth(month),
+    lastPaymentDate: "2026-07-04",
+    lastPaymentAmount: 1500,
+  };
+
+  return { mockPayments, mockSubscription };
+}
+
 interface StatCardProps {
   label: string;
   value: string;
@@ -90,6 +174,15 @@ export default function PaymentPage() {
 
   const fetchData = async () => {
     if (!user) return;
+
+    if (DEV_MOCK_DATA) {
+      const { mockPayments, mockSubscription } = buildMockData();
+      setPayments(mockPayments);
+      setSubscription(mockSubscription);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const [historyRes, subRes] = await Promise.all([
         getStudentPaymentHistory(user.userId),
@@ -138,6 +231,34 @@ export default function PaymentPage() {
 
     setIsSubmitting(true);
     setFormError("");
+
+    if (DEV_MOCK_DATA) {
+      // Fake network delay, then just add it to local state so you can
+      // see the new row appear.
+      await new Promise((r) => setTimeout(r, 500));
+      setPayments((prev) => [
+        {
+          id: `mock-${Date.now()}`,
+          studentId: user.userId,
+          paymentMonth,
+          amount: Number(amount),
+          currency,
+          status: "PENDING",
+          referenceNumber: referenceNumber.trim(),
+          note: note.trim() || null,
+          verifiedBy: null,
+          verifiedAt: null,
+          dueDate,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        ...prev,
+      ]);
+      setShowModal(false);
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       await submitPaymentReference(user.userId, {
         paymentMonth,
