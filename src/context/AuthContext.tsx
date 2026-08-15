@@ -27,20 +27,19 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 /**
  * Turn this OFF once the backend auth is ready.
  */
-const DEV_LOGIN = true;
+// const DEV_LOGIN = false;
 
 // Change this role to test different dashboards.
-const DEV_USER: User = {
-  userId: "1",
-  fullName: "Meron Tadesse",
-  email: "teacher@a2sv.org",
-  role: "STUDENT",
-  status: "ACTIVE",
-  mustChangePassword: false,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-// Added missing required field
-};
+// const DEV_USER: User = {
+//   userId: "1",
+//   fullName: "Meron Tadesse",
+//   email: "teacher@bigo.edu",
+//   role: "STUDENT",
+//   status: "ACTIVE",
+//   mustChangePassword: false,
+//   createdAt: new Date().toISOString(),
+//   updatedAt: new Date().toISOString(),
+// };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -48,16 +47,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Development mode
-    if (DEV_LOGIN) {
-      setUser(DEV_USER);
+    // if (DEV_LOGIN) {
+    //   setUser(DEV_USER);
 
-      localStorage.setItem("accessToken", "dev-token");
-      localStorage.setItem("refreshToken", "dev-refresh-token");
-      localStorage.setItem("user", JSON.stringify(DEV_USER));
+    //   localStorage.setItem("accessToken", "dev-token");
+    //   localStorage.setItem("refreshToken", "dev-refresh-token");
+    //   localStorage.setItem("user", JSON.stringify(DEV_USER));
 
-      setIsLoading(false);
-      return;
-    }
+    //   setIsLoading(false);
+    //   return;
+    // }
 
     // Production mode
     const savedUser = localStorage.getItem("user");
@@ -99,10 +98,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
-    if (DEV_LOGIN) {
-      setUser(null);
-      return;
-    }
+    // if (DEV_LOGIN) {
+    //   setUser(null);
+    //   return;
+    // }
 
     try {
       const refreshToken = localStorage.getItem("refreshToken");

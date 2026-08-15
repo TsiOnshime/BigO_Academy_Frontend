@@ -6,8 +6,9 @@ import { getStudentProgress } from "../../lib/studentAPI.ts";
 import type { ProgressSheet } from "../../types/student";
 
 /** Flip to false once academic-service is reachable. */
-const DEV_MOCK_DATA = true;
+const DEV_MOCK_DATA = false;
 
+/*
 function mockProgress(): ProgressSheet {
   return {
     studentId: "1",
@@ -63,6 +64,7 @@ function mockProgress(): ProgressSheet {
     ],
   };
 }
+*/
 
 export default function StudentProgress() {
   const { user } = useAuth();
@@ -76,7 +78,7 @@ export default function StudentProgress() {
       if (!user) return;
 
       if (DEV_MOCK_DATA) {
-        setProgress(mockProgress());
+        // setProgress(mockProgress());
         setIsLoading(false);
         return;
       }

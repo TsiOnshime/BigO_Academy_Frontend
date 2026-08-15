@@ -30,9 +30,12 @@ export default function TeacherMentorshipPage() {
 
   const fetchData = async () => {
     if (!user) return;
+    const teacherId = user.id || user.userId;
+    if (!teacherId) return;
+
     try {
       const [sessionsRes, studentsRes] = await Promise.all([
-        getMentorshipSessions(user.userId),
+        getMentorshipSessions(teacherId),
         getMyStudents({ size: 100 }),
       ]);
       setSessions(sessionsRes.data.sessions || []);
@@ -50,13 +53,14 @@ export default function TeacherMentorshipPage() {
 
   const handleSchedule = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedStudent || !scheduledAt || !user) return;
+    const teacherId = user?.id || user?.userId;
+    if (!selectedStudent || !scheduledAt || !teacherId) return;
 
     setIsSubmitting(true);
     setError("");
     try {
       await scheduleMentorshipSession({
-        teacherId: user.userId,
+        teacherId: teacherId,
         studentId: selectedStudent,
         scheduledAt: new Date(scheduledAt).toISOString(),
       });
@@ -65,7 +69,11 @@ export default function TeacherMentorshipPage() {
       setScheduledAt("");
       fetchData();
     } catch (err: any) {
-      setError(err?.response?.data?.message || "Failed to schedule session");
+      setError(
+        err?.response?.data?.message ||
+          err?.response?.data?.detail ||
+          "Failed to schedule session",
+      );
     } finally {
       setIsSubmitting(false);
     }

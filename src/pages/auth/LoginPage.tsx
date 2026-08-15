@@ -1,17 +1,17 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import AuthCard from "../../components/ui/AuthCard";
 import PasswordInput from "../../components/ui/PasswordInput";
-import OAuthButtons from "../../components/ui/OAuthButtons";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(searchParams.get("error") || "");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -120,18 +120,9 @@ export default function LoginPage() {
         </button>
       </form>
 
-      {/* OAuth */}
-      <OAuthButtons label="sign in" />
-
-      {/* Sign up link */}
-      <p className="text-center text-sm text-gray-400 mt-6">
-        Don't have an account?{" "}
-        <Link
-          to="/register"
-          className="text-[#D32F2F] hover:text-[#B71C1C] font-medium transition-colors"
-        >
-          Sign up
-        </Link>
+      {/* Admin Provisioning Note */}
+      <p className="text-center text-xs text-gray-400 mt-6 leading-relaxed">
+        BigO Academy accounts are provisioned exclusively by administrators. Use the login credentials emailed to you upon admission.
       </p>
     </AuthCard>
   );

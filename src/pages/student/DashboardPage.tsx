@@ -6,6 +6,7 @@ import {
   AlertTriangle,
   TrendingUp,
   Clock,
+  CheckCircle2,
 } from "lucide-react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import { useAuth } from "../../hooks/useAuth";
@@ -14,7 +15,8 @@ import {
   getStudentProgress,
   getStudentWarnings,
   getMyMentorshipSessions,
-} from "../../lib/studentAPI.ts";
+  getCohortTopics,
+} from "../../lib/studentAPI";
 
 import type {
   Student,
@@ -23,76 +25,7 @@ import type {
   MentorshipSession,
 } from "../../types/student";
 
-/** Flip to false once academic-service is reachable. See PaymentPage.tsx
- * for the same pattern. */
-const DEV_MOCK_DATA = true;
-
-function mockData() {
-  const student: Student = {
-    id: "1",
-    fullName: "Meron Tadesse",
-    email: "student@a2sv.org",
-    status: "ACTIVE",
-    yearPhase: 1,
-    cohortId: "c1",
-    cohortName: "Cohort 7",
-    assignedTeacherId: "t1",
-    attendancePercentage: 92,
-    activeWarningCount: 1,
-    joinedAt: "2026-01-10",
-    createdAt: "2026-01-10T00:00:00Z",
-    updatedAt: "2026-01-10T00:00:00Z",
-  };
-  const progress: ProgressSheet = {
-    studentId: "1",
-    totalProblems: 120,
-    solvedCount: 47,
-    completionPercentage: 39.2,
-    progress: [],
-  };
-  const warnings: StudentWarnings = {
-    studentId: "1",
-    activeWarningCount: 1,
-    warnings: [
-      {
-        id: "w1",
-        studentId: "1",
-        type: "LOW_CONSISTENCY",
-        status: "ACTIVE",
-        warningNumber: 1,
-        issuedAt: "2026-08-01T00:00:00Z",
-        dismissedAt: null,
-        dismissedBy: null,
-        dismissalNote: null,
-      },
-    ],
-  };
-  const sessions: MentorshipSession[] = [
-    {
-      id: "s1",
-      teacherId: "t1",
-      teacherName: "Abel Getachew",
-      studentId: "1",
-      studentName: "Meron Tadesse",
-      scheduledAt: new Date(Date.now() + 86400000 * 2).toISOString(),
-      status: "SCHEDULED",
-      notes: null,
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "s2",
-      teacherId: "t1",
-      teacherName: "Abel Getachew",
-      studentId: "1",
-      studentName: "Meron Tadesse",
-      scheduledAt: new Date(Date.now() + 86400000 * 9).toISOString(),
-      status: "SCHEDULED",
-      notes: null,
-      createdAt: new Date().toISOString(),
-    },
-  ];
-  return { student, progress, warnings, sessions };
-}
+const DEFAULT_COHORT_ID = "2f4855d9-bb92-473b-85db-79fe58db350b";
 
 interface StatCardProps {
   label: string;
@@ -103,7 +36,7 @@ interface StatCardProps {
 
 function StatCard({ label, value, icon, color }: StatCardProps) {
   return (
-    <div className="bg-[#242424] rounded-2xl p-5 flex items-center gap-4">
+    <div className="bg-[#242424] rounded-2xl p-5 flex items-center gap-4 border border-[#2A2A32] shadow-sm">
       <div
         className={`w-12 h-12 rounded-xl flex items-center justify-center ${color}`}
       >
@@ -121,55 +54,86 @@ export default function StudentDashboard() {
   const { user } = useAuth();
   const [student, setStudent] = useState<Student | null>(null);
   const [progress, setProgress] = useState<ProgressSheet | null>(null);
+  const [totalCurriculumProblems, setTotalCurriculumProblems] = useState<number>(39);
   const [warnings, setWarnings] = useState<StudentWarnings | null>(null);
   const [sessions, setSessions] = useState<MentorshipSession[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       if (!user) return;
 
-      if (DEV_MOCK_DATA) {
-        const m = mockData();
-        setStudent(m.student);
-        setProgress(m.progress);
-        setWarnings(m.warnings);
-        setSessions(m.sessions);
-        setIsLoading(false);
-        return;
-      }
-
       try {
-        const [studentRes, progressRes, warningsRes, sessionsRes] =
-          await Promise.all([
-            getStudent(user.userId),
-            getStudentProgress(user.userId),
-            getStudentWarnings(user.userId),
-            getMyMentorshipSessions(user.userId),
-          ]);
-        setStudent(studentRes.data);
-        setProgress(progressRes.data);
-        setWarnings(warningsRes.data);
-        setSessions(sessionsRes.data.sessions || []);
-      } catch {
-        setError("Failed to load dashboard data");
+        const [
+          studentRes,
+          progressRes,
+          warningsRes,
+          sessionsRes,
+        ] = await Promise.allSettled([
+          getStudent(user.userId),
+          getStudentProgress(user.userId),
+          getStudentWarnings(user.userId),
+          getMyMentorshipSessions(user.userId),
+        ]);
+
+        let loadedStudent: Student | null = null;
+        if (studentRes.status === "fulfilled") {
+          loadedStudent = studentRes.value.data;
+          setStudent(loadedStudent);
+        }
+
+        if (progressRes.status === "fulfilled") {
+          setProgress(progressRes.value.data);
+        }
+
+        if (warningsRes.status === "fulfilled") {
+          setWarnings(warningsRes.value.data);
+        }
+
+        if (sessionsRes.status === "fulfilled") {
+          setSessions(sessionsRes.value.data.sessions || []);
+        }
+
+        // Fetch curriculum total problems for cohort
+        const cohortId = loadedStudent?.cohortId || DEFAULT_COHORT_ID;
+        try {
+          const topicsRes = await getCohortTopics(cohortId);
+          const topics = topicsRes.data.topics || [];
+          const totalCount = topics.reduce(
+            (acc, t) => acc + (t.problemCount || 0),
+            0
+          );
+          if (totalCount > 0) setTotalCurriculumProblems(totalCount);
+        } catch {
+          // fallback to 39
+        }
+      } catch (err) {
+        console.error("Dashboard data load error", err);
       } finally {
         setIsLoading(false);
       }
     };
+
     fetchData();
   }, [user]);
 
   const upcomingSessions = sessions
-    .filter((s) => s.status === "SCHEDULED" && new Date(s.scheduledAt) > new Date())
+    .filter(
+      (s) => s.status === "SCHEDULED" && new Date(s.scheduledAt) > new Date()
+    )
     .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
+
+  const solvedCount = progress?.solvedCount ?? 0;
+  const completionPercent = totalCurriculumProblems
+    ? Math.round((solvedCount / totalCurriculumProblems) * 100)
+    : 0;
 
   if (isLoading) {
     return (
       <DashboardLayout title="Dashboard">
-        <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center justify-center h-64 gap-3">
           <div className="w-8 h-8 border-4 border-[#D32F2F] border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-gray-400">Loading dashboard...</p>
         </div>
       </DashboardLayout>
     );
@@ -177,22 +141,24 @@ export default function StudentDashboard() {
 
   return (
     <DashboardLayout title="Dashboard">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-white">
-          Welcome back, <span className="text-[#D32F2F]">{user?.fullName}!</span>
-        </h2>
-        <p className="text-gray-400 mt-1">
-          {student?.cohortName
-            ? `${student.cohortName} · Year ${student.yearPhase}`
-            : "Here's an overview of your progress."}
-        </p>
-      </div>
-
-      {error && (
-        <div className="mb-4 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
-          {error}
+      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-white">
+            Welcome back, <span className="text-[#D32F2F]">{user?.fullName}!</span>
+          </h2>
+          <p className="text-gray-400 mt-1 text-sm">
+            {student?.cohortName || "BigO Academy - Cohort 6"} · Year{" "}
+            {student?.yearPhase || 1} Student
+          </p>
         </div>
-      )}
+
+        <Link
+          to="/courses"
+          className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#D32F2F] text-white hover:bg-[#B71C1C] transition-all self-start md:self-auto flex items-center gap-1.5 shadow-lg shadow-[#D32F2F]/20"
+        >
+          <BookOpen size={14} /> Go to My Courses
+        </Link>
+      </div>
 
       {warnings && warnings.activeWarningCount > 0 && (
         <div className="mb-6 flex items-center gap-3 px-4 py-3 rounded-xl bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 text-sm">
@@ -203,22 +169,23 @@ export default function StudentDashboard() {
         </div>
       )}
 
+      {/* Main Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard
           label="Attendance"
-          value={`${Math.round(student?.attendancePercentage ?? 0)}%`}
+          value={`${Math.round(student?.attendancePercentage !== undefined && student?.attendancePercentage !== null ? student.attendancePercentage : 100)}%`}
           icon={<Calendar size={22} className="text-blue-400" />}
           color="bg-blue-400/10"
         />
         <StatCard
           label="Problems Solved"
-          value={`${progress?.solvedCount ?? 0}/${progress?.totalProblems ?? 0}`}
-          icon={<BookOpen size={22} className="text-green-400" />}
+          value={`${solvedCount} / ${totalCurriculumProblems}`}
+          icon={<CheckCircle2 size={22} className="text-green-400" />}
           color="bg-green-400/10"
         />
         <StatCard
           label="Completion"
-          value={`${Math.round(progress?.completionPercentage ?? 0)}%`}
+          value={`${completionPercent}%`}
           icon={<TrendingUp size={22} className="text-[#D32F2F]" />}
           color="bg-[#D32F2F]/10"
         />
@@ -230,19 +197,20 @@ export default function StudentDashboard() {
         />
       </div>
 
-      <div className="bg-[#242424] rounded-2xl p-5">
+      {/* Mentorship Section */}
+      <div className="bg-[#242424] rounded-2xl p-5 border border-[#2A2A32]">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-white font-semibold">Upcoming Mentorship</h3>
           <Link
             to="/schedule"
-            className="text-sm text-[#D32F2F] hover:text-[#B71C1C]"
+            className="text-xs text-[#D32F2F] hover:text-[#B71C1C] font-semibold"
           >
-            View all
+            View all &rarr;
           </Link>
         </div>
 
         {upcomingSessions.length === 0 ? (
-          <p className="text-gray-500 text-sm py-4 text-center">
+          <p className="text-gray-500 text-sm py-6 text-center bg-[#1C1C20] rounded-xl border border-[#2A2A32]">
             No upcoming sessions scheduled
           </p>
         ) : (
@@ -250,7 +218,7 @@ export default function StudentDashboard() {
             {upcomingSessions.slice(0, 5).map((session) => (
               <div
                 key={session.id}
-                className="flex items-center justify-between py-2 border-b border-[#2a2a2a] last:border-0"
+                className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-[#1C1C20] border border-[#2A2A32]"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-blue-400/10 flex items-center justify-center">
@@ -268,12 +236,12 @@ export default function StudentDashboard() {
                           day: "numeric",
                           hour: "2-digit",
                           minute: "2-digit",
-                        },
+                        }
                       )}
                     </p>
                   </div>
                 </div>
-                <span className="text-xs px-2 py-1 rounded-full bg-blue-400/10 text-blue-400">
+                <span className="text-xs px-2.5 py-1 rounded-full bg-blue-400/10 text-blue-400 font-medium">
                   Scheduled
                 </span>
               </div>

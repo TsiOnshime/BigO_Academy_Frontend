@@ -7,16 +7,27 @@ export default function TeacherProfilePage() {
   const { user } = useAuth();
   const [teacher, setTeacher] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchProfile = async () => {
       if (!user) return;
+      const teacherId = user.id || user.userId;
+      if (!teacherId) {
+        setIsLoading(false);
+        return;
+      }
       try {
-        const res = await getTeacher(user.userId);
+        const res = await getTeacher(teacherId);
         setTeacher(res.data);
       } catch {
-        setError("Failed to load profile");
+        // Fallback to auth user details
+        setTeacher({
+          fullName: user.fullName,
+          email: user.email,
+          status: user.status || "ACTIVE",
+          assignedCohortIds: [],
+          createdAt: user.createdAt || new Date().toISOString(),
+        });
       } finally {
         setIsLoading(false);
       }
@@ -36,10 +47,6 @@ export default function TeacherProfilePage() {
       {isLoading ? (
         <div className="flex items-center justify-center h-64">
           <div className="w-8 h-8 border-4 border-[#D32F2F] border-t-transparent rounded-full animate-spin" />
-        </div>
-      ) : error ? (
-        <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
-          {error}
         </div>
       ) : (
         <div className="max-w-lg space-y-6">

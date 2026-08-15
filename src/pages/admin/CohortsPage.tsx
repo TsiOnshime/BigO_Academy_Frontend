@@ -105,17 +105,17 @@ export default function AdminCohortsPage() {
           <div className="w-8 h-8 border-4 border-[#D32F2F] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : cohorts.length === 0 ? (
-        <div className="text-center py-16 text-gray-500">
+        <div className="text-center py-16" style={{ color: "var(--text-muted)" }}>
           <BookOpen size={40} className="mx-auto mb-3 opacity-30" />
           <p>No cohorts yet</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {cohorts.map((cohort) => (
-            <div key={cohort.id} className="bg-[#242424] rounded-2xl p-5">
+            <div key={cohort.id} className="rounded-2xl p-5" style={{ backgroundColor: "var(--bg-surface)" }}>
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="text-white font-semibold">{cohort.name}</h3>
+                  <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>{cohort.name}</h3>
                   <span
                     className={`text-xs px-2 py-0.5 rounded-full mt-1 inline-block ${
                       cohort.status === "ACTIVE"
@@ -131,8 +131,8 @@ export default function AdminCohortsPage() {
                     onClick={() => handleArchive(cohort.id)}
                     disabled={archivingId === cohort.id}
                     className="text-xs px-3 py-1.5 rounded-lg bg-gray-400/10
-                      text-gray-400 hover:bg-gray-400/20 disabled:opacity-50
-                      transition-colors"
+                      disabled:opacity-50 transition-colors"
+                    style={{ color: "var(--text-secondary)" }}
                   >
                     {archivingId === cohort.id ? "..." : "Archive"}
                   </button>
@@ -141,14 +141,14 @@ export default function AdminCohortsPage() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500 flex items-center gap-1.5">
+                  <span className="flex items-center gap-1.5" style={{ color: "var(--text-muted)" }}>
                     <Users size={14} /> Students
                   </span>
-                  <span className="text-white">
+                  <span style={{ color: "var(--text-primary)" }}>
                     {cohort.enrolledStudentCount} / {cohort.studentCapacity}
                   </span>
                 </div>
-                <div className="w-full h-1.5 bg-[#3a3a3a] rounded-full overflow-hidden">
+                <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "var(--border)" }}>
                   <div
                     className="h-full bg-[#D32F2F] rounded-full"
                     style={{
@@ -162,8 +162,8 @@ export default function AdminCohortsPage() {
                   />
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Start date</span>
-                  <span className="text-white">
+                  <span style={{ color: "var(--text-muted)" }}>Start date</span>
+                  <span style={{ color: "var(--text-primary)" }}>
                     {new Date(cohort.startDate).toLocaleDateString("en-US", {
                       month: "short",
                       year: "numeric",
@@ -171,8 +171,8 @@ export default function AdminCohortsPage() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Graduation</span>
-                  <span className="text-white">
+                  <span style={{ color: "var(--text-muted)" }}>Graduation</span>
+                  <span style={{ color: "var(--text-primary)" }}>
                     {new Date(cohort.expectedGraduationDate).toLocaleDateString(
                       "en-US",
                       { month: "short", year: "numeric" },
@@ -188,12 +188,12 @@ export default function AdminCohortsPage() {
       {/* Create modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4">
-          <div className="bg-[#242424] rounded-2xl p-6 w-full max-w-md">
+          <div className="rounded-2xl p-6 w-full max-w-md" style={{ backgroundColor: "var(--bg-surface)" }}>
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-white font-semibold text-lg">New Cohort</h3>
+              <h3 className="font-semibold text-lg" style={{ color: "var(--text-primary)" }}>New Cohort</h3>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-500 hover:text-white"
+                style={{ color: "var(--text-muted)" }}
               >
                 <X size={20} />
               </button>
@@ -233,7 +233,7 @@ export default function AdminCohortsPage() {
                 },
               ].map(({ label, key, type, placeholder }) => (
                 <div key={key}>
-                  <label className="block text-sm text-gray-300 mb-1.5">
+                  <label className="block text-sm mb-1.5" style={{ color: "var(--text-secondary)" }}>
                     {label}
                   </label>
                   <input
@@ -243,9 +243,12 @@ export default function AdminCohortsPage() {
                       setForm({ ...form, [key]: e.target.value })
                     }
                     placeholder={placeholder}
-                    className="w-full px-4 py-3 rounded-xl bg-[#2a2a2a] border
-                      border-[#3a3a3a] text-white text-sm focus:outline-none
-                      focus:border-[#D32F2F] transition-colors"
+                    className="w-full px-4 py-3 rounded-xl border text-sm focus:outline-none focus:border-[#D32F2F] transition-colors"
+                    style={{
+                      backgroundColor: "var(--bg-elevated)",
+                      borderColor: "var(--border)",
+                      color: "var(--text-primary)",
+                    }}
                   />
                 </div>
               ))}
@@ -254,8 +257,11 @@ export default function AdminCohortsPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 py-3 rounded-xl border border-[#3a3a3a]
-                    text-gray-400 text-sm hover:text-white transition-colors"
+                  className="flex-1 py-3 rounded-xl border text-sm transition-colors"
+                  style={{
+                    borderColor: "var(--border)",
+                    color: "var(--text-secondary)",
+                  }}
                 >
                   Cancel
                 </button>

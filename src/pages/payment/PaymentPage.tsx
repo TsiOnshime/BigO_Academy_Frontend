@@ -50,8 +50,9 @@ function formatMonth(month: string) {
  * While true, the page renders with fake data instead of calling the API,
  * so you can preview the UI without the backend up.
  */
-const DEV_MOCK_DATA = true;
+const DEV_MOCK_DATA = false;
 
+/*
 function buildMockData() {
   const month = currentMonth();
   const mockPayments: StudentPayment[] = [
@@ -128,6 +129,7 @@ function buildMockData() {
 
   return { mockPayments, mockSubscription };
 }
+*/
 
 interface StatCardProps {
   label: string;
@@ -174,19 +176,22 @@ export default function PaymentPage() {
 
   const fetchData = async () => {
     if (!user) return;
+    const studentId = user.userId || (user as any).id;
+    if (!studentId) return;
 
     if (DEV_MOCK_DATA) {
-      const { mockPayments, mockSubscription } = buildMockData();
-      setPayments(mockPayments);
-      setSubscription(mockSubscription);
+      // const { mockPayments, mockSubscription } = buildMockData();
+      // setPayments(mockPayments);
+      // setSubscription(mockSubscription);
       setIsLoading(false);
       return;
     }
 
+    setError("");
     try {
       const [historyRes, subRes] = await Promise.all([
-        getStudentPaymentHistory(user.userId),
-        getSubscriptionStatus(user.userId),
+        getStudentPaymentHistory(studentId),
+        getSubscriptionStatus(studentId),
       ]);
       setPayments(historyRes.data.payments || []);
       setSubscription(subRes.data);
@@ -235,32 +240,33 @@ export default function PaymentPage() {
     if (DEV_MOCK_DATA) {
       // Fake network delay, then just add it to local state so you can
       // see the new row appear.
-      await new Promise((r) => setTimeout(r, 500));
-      setPayments((prev) => [
-        {
-          id: `mock-${Date.now()}`,
-          studentId: user.userId,
-          paymentMonth,
-          amount: Number(amount),
-          currency,
-          status: "PENDING",
-          referenceNumber: referenceNumber.trim(),
-          note: note.trim() || null,
-          verifiedBy: null,
-          verifiedAt: null,
-          dueDate,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        ...prev,
-      ]);
+      // await new Promise((r) => setTimeout(r, 500));
+      // setPayments((prev) => [
+      //   {
+      //     id: `mock-${Date.now()}`,
+      //     studentId: user.userId,
+      //     paymentMonth,
+      //     amount: Number(amount),
+      //     currency,
+      //     status: "PENDING",
+      //     referenceNumber: referenceNumber.trim(),
+      //     note: note.trim() || null,
+      //     verifiedBy: null,
+      //     verifiedAt: null,
+      //     dueDate,
+      //     createdAt: new Date().toISOString(),
+      //     updatedAt: new Date().toISOString(),
+      //   },
+      //   ...prev,
+      // ]);
       setShowModal(false);
       setIsSubmitting(false);
       return;
     }
 
     try {
-      await submitPaymentReference(user.userId, {
+      const studentId = user.userId || (user as any).id;
+      await submitPaymentReference(studentId, {
         paymentMonth,
         referenceNumber: referenceNumber.trim(),
         amount: Number(amount),

@@ -1,4 +1,20 @@
-import { academicApi, paymentApi, analyticsApi } from "./api";
+import { authApi, academicApi, paymentApi, analyticsApi } from "./api";
+
+// ── Auth Account Management ────────────────────────────────────────────────
+
+export const createAuthAccount = (data: {
+  email: string;
+  fullName: string;
+  role: "STUDENT" | "TEACHER" | "ADMIN";
+  password?: string;
+  status?: string;
+}) => authApi.post("/auth/admin/accounts/", data);
+
+export const activateAuthAccount = (userId: string) =>
+  authApi.post(`/auth/admin/accounts/${userId}/activate/`);
+
+export const deactivateAuthAccount = (userId: string) =>
+  authApi.post(`/auth/admin/accounts/${userId}/deactivate/`);
 
 // ── Academic ──────────────────────────────────────────────────────────────
 
@@ -8,6 +24,23 @@ export const getAllStudents = (params?: {
   page?: number;
   size?: number;
 }) => academicApi.get("/students/", { params });
+
+export const createStudent = (data: {
+  userId: string;
+  fullName: string;
+  email: string;
+  cohortId: string;
+  codeforcesHandle?: string;
+  joinedAt?: string;
+}) =>
+  academicApi.post("/students/", {
+    userId: data.userId,
+    fullName: data.fullName,
+    email: data.email,
+    cohortId: data.cohortId,
+    codeforcesHandle: data.codeforcesHandle,
+    joinedAt: data.joinedAt,
+  });
 
 export const updateStudentStatus = (
   studentId: string,
@@ -106,3 +139,19 @@ export const getGlobalLeaderboard = (params?: {
 
 export const getCohortAnalytics = (cohortId: string) =>
   analyticsApi.get(`/analytics/admin/cohorts/${cohortId}/`);
+
+// ── Contests ──────────────────────────────────────────────────────────────
+
+export const getAdminContests = (params?: {
+  cohortId?: string;
+  status?: string;
+}) => academicApi.get("/contests/", { params });
+
+export const createAdminContest = (data: {
+  title: string;
+  externalContestUrl: string;
+  scheduledAt: string;
+  cohortId?: string;
+  problemCount?: number;
+}) => academicApi.post("/contests/", data);
+

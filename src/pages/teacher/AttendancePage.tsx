@@ -12,7 +12,6 @@ interface AttendanceRecord {
 }
 
 export default function TeacherAttendancePage() {
-  const [students, setStudents] = useState<any[]>([]);
   const [cohortId, setCohortId] = useState("");
   const [sessionDate, setSessionDate] = useState(
     new Date().toISOString().split("T")[0],
@@ -24,62 +23,32 @@ export default function TeacherAttendancePage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fakeStudents = [
-      {
-        id: "1",
-        fullName: "Abel Girma",
-        cohortId: "cohort-2024",
-      },
-      {
-        id: "2",
-        fullName: "Selam Tesfaye",
-        cohortId: "cohort-2024",
-      },
-      {
-        id: "3",
-        fullName: "Meron Bekele",
-        cohortId: "cohort-2024",
-      },
-      {
-        id: "4",
-        fullName: "Henok Alemu",
-        cohortId: "cohort-2024",
-      },
-      {
-        id: "5",
-        fullName: "Bethlehem Worku",
-        cohortId: "cohort-2024",
-      },
-      {
-        id: "6",
-        fullName: "Nahom Kebede",
-        cohortId: "cohort-2024",
-      },
-      {
-        id: "7",
-        fullName: "Ruth Solomon",
-        cohortId: "cohort-2024",
-      },
-      {
-        id: "8",
-        fullName: "Daniel Tadesse",
-        cohortId: "cohort-2024",
-      },
-    ];
+    const fetchAttendanceData = async () => {
+      try {
+        setIsLoading(true);
+        const res = await getMyStudents({ size: 100 });
+        const realStudents = res.data?.students || [];
 
-    setStudents(fakeStudents);
-    setCohortId("cohort-2024");
+        if (realStudents.length > 0) {
+          const firstCohort = realStudents[0].cohortId || "";
+          setCohortId(firstCohort);
+          setRecords(
+            realStudents.map((student: any) => ({
+              studentId: student.id,
+              studentName: student.fullName,
+              status: "PRESENT" as AttendanceStatus,
+              note: "",
+            })),
+          );
+        }
+      } catch {
+        setError("Failed to load students for attendance marking");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    setRecords(
-      fakeStudents.map((student) => ({
-        studentId: student.id,
-        studentName: student.fullName,
-        status: "PRESENT" as AttendanceStatus,
-        note: "",
-      })),
-    );
-
-    setIsLoading(false);
+    fetchAttendanceData();
   }, []);
 
   const updateRecord = (

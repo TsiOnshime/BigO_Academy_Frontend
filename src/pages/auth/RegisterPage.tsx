@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Info } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import AuthCard from "../../components/ui/AuthCard";
 import PasswordInput from "../../components/ui/PasswordInput";
-import OAuthButtons from "../../components/ui/OAuthButtons";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -70,11 +70,23 @@ export default function RegisterPage() {
   return (
     <AuthCard>
       <h1 className="text-2xl font-bold text-white mb-1">
-        Create your account
+        Student Admissions
       </h1>
-      <p className="text-sm text-gray-400 mb-6">
-        Start your learning journey with BigO Academy
+      <p className="text-sm text-gray-400 mb-4">
+        Join the BigO Academy cohort
       </p>
+
+      {/* Admissions Notice */}
+      <div className="mb-5 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs leading-relaxed flex items-start gap-2.5">
+        <Info size={16} className="text-amber-400 shrink-0 mt-0.5" />
+        <div>
+          <span className="font-semibold block text-amber-200">Admissions Notice</span>
+          BigO Academy admissions are by application and technical interview. If you have been accepted, your account has already been created by the admissions team — please{" "}
+          <Link to="/login" className="underline font-bold text-white hover:text-amber-200">
+            Log in here
+          </Link>.
+        </div>
+      </div>
 
       {/* Global error */}
       {errors.global && (
@@ -186,9 +198,6 @@ export default function RegisterPage() {
           )}
         </button>
       </form>
-
-      {/* OAuth */}
-      <OAuthButtons label="sign up" />
 
       {/* Login link */}
       <p className="text-center text-sm text-gray-400 mt-6">

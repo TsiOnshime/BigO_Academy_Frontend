@@ -2,10 +2,8 @@ import { useState } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import PasswordInput from "../../components/ui/PasswordInput";
 import { authApi } from "../../lib/api";
-import { useAuth } from "../../hooks/useAuth";
 
 export default function AdminSecurityPage() {
-  const { user } = useAuth();
   const [form, setForm] = useState({
     currentPassword: "",
     newPassword: "",

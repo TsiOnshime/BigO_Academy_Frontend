@@ -109,7 +109,7 @@ export default function AdminPaymentsPage() {
   return (
     <DashboardLayout title="Payments">
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 bg-[#242424] p-1 rounded-xl w-fit">
+      <div className="flex gap-1 mb-6 p-1 rounded-xl w-fit" style={{ backgroundColor: "var(--bg-surface)" }}>
         {tabs.map((t) => (
           <button
             key={t.key}
@@ -117,15 +117,19 @@ export default function AdminPaymentsPage() {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               tab === t.key
                 ? "bg-[#D32F2F] text-white"
-                : "text-gray-400 hover:text-white"
+                : "hover:text-white"
             }`}
+            style={{
+              color: tab === t.key ? "#ffffff" : "var(--text-secondary)",
+            }}
           >
             {t.label}
             {t.count !== undefined && t.count > 0 && (
               <span
-                className={`ml-2 text-xs px-1.5 py-0.5 rounded-full ${
-                  tab === t.key ? "bg-white/20" : "bg-[#3a3a3a]"
-                }`}
+                className="ml-2 text-xs px-1.5 py-0.5 rounded-full"
+                style={{
+                  backgroundColor: tab === t.key ? "rgba(255,255,255,0.2)" : "var(--border)",
+                }}
               >
                 {t.count}
               </span>
@@ -150,26 +154,26 @@ export default function AdminPaymentsPage() {
           {tab === "pending" && (
             <div className="space-y-3">
               {pendingPayments.length === 0 ? (
-                <div className="text-center py-16 text-gray-500 text-sm">
+                <div className="text-center py-16 text-sm" style={{ color: "var(--text-muted)" }}>
                   No pending payments to verify
                 </div>
               ) : (
                 pendingPayments.map((payment) => (
                   <div
                     key={payment.id}
-                    className="bg-[#242424] rounded-2xl p-5
-                    flex items-center justify-between"
+                    className="rounded-2xl p-5 flex items-center justify-between"
+                    style={{ backgroundColor: "var(--bg-surface)" }}
                   >
                     <div>
-                      <p className="text-white font-medium">
+                      <p className="font-medium" style={{ color: "var(--text-primary)" }}>
                         Student ID: {payment.studentId?.slice(0, 8)}...
                       </p>
-                      <p className="text-gray-400 text-sm mt-0.5">
+                      <p className="text-sm mt-0.5" style={{ color: "var(--text-secondary)" }}>
                         {payment.paymentMonth} · {payment.currency}{" "}
                         {payment.amount}
                       </p>
                       {payment.referenceNumber && (
-                        <p className="text-gray-500 text-xs mt-1">
+                        <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
                           Ref: {payment.referenceNumber}
                         </p>
                       )}
@@ -220,23 +224,23 @@ export default function AdminPaymentsPage() {
           {tab === "overdue" && (
             <div className="space-y-3">
               {overduePayments.length === 0 ? (
-                <div className="text-center py-16 text-gray-500 text-sm">
+                <div className="text-center py-16 text-sm" style={{ color: "var(--text-muted)" }}>
                   No overdue payments
                 </div>
               ) : (
                 overduePayments.map((payment) => (
                   <div
                     key={payment.id}
-                    className="bg-[#242424] rounded-2xl p-5
-                    flex items-center justify-between"
+                    className="rounded-2xl p-5 flex items-center justify-between"
+                    style={{ backgroundColor: "var(--bg-surface)" }}
                   >
                     <div className="flex items-center gap-3">
                       <AlertTriangle size={18} className="text-yellow-400" />
                       <div>
-                        <p className="text-white font-medium">
+                        <p className="font-medium" style={{ color: "var(--text-primary)" }}>
                           Student ID: {payment.studentId?.slice(0, 8)}...
                         </p>
-                        <p className="text-gray-400 text-sm mt-0.5">
+                        <p className="text-sm mt-0.5" style={{ color: "var(--text-secondary)" }}>
                           {payment.paymentMonth} · {payment.currency}{" "}
                           {payment.amount}
                         </p>
@@ -258,21 +262,21 @@ export default function AdminPaymentsPage() {
           {tab === "teachers" && (
             <div className="space-y-3">
               {teacherPayments.length === 0 ? (
-                <div className="text-center py-16 text-gray-500 text-sm">
+                <div className="text-center py-16 text-sm" style={{ color: "var(--text-muted)" }}>
                   No pending teacher payments
                 </div>
               ) : (
                 teacherPayments.map((payment) => (
                   <div
                     key={payment.id}
-                    className="bg-[#242424] rounded-2xl p-5
-                    flex items-center justify-between"
+                    className="rounded-2xl p-5 flex items-center justify-between"
+                    style={{ backgroundColor: "var(--bg-surface)" }}
                   >
                     <div>
-                      <p className="text-white font-medium">
+                      <p className="font-medium" style={{ color: "var(--text-primary)" }}>
                         Teacher ID: {payment.teacherId?.slice(0, 8)}...
                       </p>
-                      <p className="text-gray-400 text-sm mt-0.5">
+                      <p className="text-sm mt-0.5" style={{ color: "var(--text-secondary)" }}>
                         {payment.paymentMonth} · {payment.currency}{" "}
                         {payment.amount}
                       </p>
@@ -305,8 +309,8 @@ export default function AdminPaymentsPage() {
                               )
                             }
                             className="flex items-center gap-1.5 text-xs px-3 py-2
-                              rounded-lg bg-gray-400/10 text-gray-400
-                              hover:bg-gray-400/20 transition-colors"
+                              rounded-lg bg-gray-400/10 hover:bg-gray-400/20 transition-colors"
+                            style={{ color: "var(--text-secondary)" }}
                           >
                             <XCircle size={14} /> Cancel
                           </button>
@@ -322,8 +326,8 @@ export default function AdminPaymentsPage() {
           {/* Summary */}
           {tab === "summary" && summary && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-[#242424] rounded-2xl p-5">
-                <h3 className="text-white font-semibold mb-4">
+              <div className="rounded-2xl p-5" style={{ backgroundColor: "var(--bg-surface)" }}>
+                <h3 className="font-semibold mb-4" style={{ color: "var(--text-primary)" }}>
                   Student Payments — {summary.month}
                 </h3>
                 <div className="space-y-3">
@@ -346,22 +350,23 @@ export default function AdminPaymentsPage() {
                     {
                       label: "Amount Collected",
                       value: `${summary.studentPayments?.currency} ${summary.studentPayments?.totalAmountCollected?.toLocaleString()}`,
-                      color: "text-white",
+                      color: "",
                     },
                   ].map(({ label, value, color }) => (
                     <div
                       key={label}
-                      className="flex items-center justify-between py-2 border-b border-[#2a2a2a] last:border-0"
+                      className="flex items-center justify-between py-2 border-b last:border-0"
+                      style={{ borderColor: "var(--border)" }}
                     >
-                      <span className="text-gray-400 text-sm">{label}</span>
-                      <span className={`font-semibold ${color}`}>{value}</span>
+                      <span className="text-sm" style={{ color: "var(--text-secondary)" }}>{label}</span>
+                      <span className={`font-semibold ${color}`} style={!color ? { color: "var(--text-primary)" } : {}}>{value}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="bg-[#242424] rounded-2xl p-5">
-                <h3 className="text-white font-semibold mb-4">
+              <div className="rounded-2xl p-5" style={{ backgroundColor: "var(--bg-surface)" }}>
+                <h3 className="font-semibold mb-4" style={{ color: "var(--text-primary)" }}>
                   Teacher Payments — {summary.month}
                 </h3>
                 <div className="space-y-3">
@@ -379,7 +384,7 @@ export default function AdminPaymentsPage() {
                     {
                       label: "Amount Paid",
                       value: `${summary.teacherPayments?.currency} ${summary.teacherPayments?.totalAmountPaid?.toLocaleString()}`,
-                      color: "text-white",
+                      color: "",
                     },
                     {
                       label: "Amount Pending",
@@ -389,10 +394,11 @@ export default function AdminPaymentsPage() {
                   ].map(({ label, value, color }) => (
                     <div
                       key={label}
-                      className="flex items-center justify-between py-2 border-b border-[#2a2a2a] last:border-0"
+                      className="flex items-center justify-between py-2 border-b last:border-0"
+                      style={{ borderColor: "var(--border)" }}
                     >
-                      <span className="text-gray-400 text-sm">{label}</span>
-                      <span className={`font-semibold ${color}`}>{value}</span>
+                      <span className="text-sm" style={{ color: "var(--text-secondary)" }}>{label}</span>
+                      <span className={`font-semibold ${color}`} style={!color ? { color: "var(--text-primary)" } : {}}>{value}</span>
                     </div>
                   ))}
                 </div>

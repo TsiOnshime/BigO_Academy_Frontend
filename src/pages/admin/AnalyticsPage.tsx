@@ -49,7 +49,7 @@ export default function AdminAnalyticsPage() {
       {/* Platform stats */}
       {platform && (
         <>
-          <h2 className="text-white font-semibold mb-4">Platform Overview</h2>
+          <h2 className="font-semibold mb-4" style={{ color: "var(--text-primary)" }}>Platform Overview</h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {[
               {
@@ -103,7 +103,8 @@ export default function AdminAnalyticsPage() {
             ].map(({ label, value, icon, color }) => (
               <div
                 key={label}
-                className="bg-[#242424] rounded-2xl p-4 flex items-center gap-3"
+                className="rounded-2xl p-4 flex items-center gap-3"
+                style={{ backgroundColor: "var(--bg-surface)" }}
               >
                 <div
                   className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}
@@ -111,8 +112,8 @@ export default function AdminAnalyticsPage() {
                   {icon}
                 </div>
                 <div>
-                  <p className="text-gray-400 text-xs">{label}</p>
-                  <p className="text-white text-xl font-bold">{value}</p>
+                  <p className="text-xs" style={{ color: "var(--text-muted)" }}>{label}</p>
+                  <p className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>{value}</p>
                 </div>
               </div>
             ))}
@@ -121,13 +122,13 @@ export default function AdminAnalyticsPage() {
       )}
 
       {/* Global leaderboard */}
-      <h2 className="text-white font-semibold mb-4">
+      <h2 className="font-semibold mb-4" style={{ color: "var(--text-primary)" }}>
         Global Leaderboard — Top 10
       </h2>
-      <div className="bg-[#242424] rounded-2xl overflow-hidden">
+      <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: "var(--bg-surface)" }}>
         <div
-          className="grid grid-cols-12 px-5 py-3 border-b border-[#2a2a2a]
-          text-gray-500 text-xs font-medium uppercase"
+          className="grid grid-cols-12 px-5 py-3 border-b text-xs font-medium uppercase"
+          style={{ borderColor: "var(--border)", color: "var(--text-muted)" }}
         >
           <span className="col-span-1">Rank</span>
           <span className="col-span-4">Student</span>
@@ -137,25 +138,25 @@ export default function AdminAnalyticsPage() {
         </div>
 
         {leaderboard.length === 0 ? (
-          <div className="text-center py-16 text-gray-500 text-sm">
+          <div className="text-center py-16 text-sm" style={{ color: "var(--text-muted)" }}>
             No leaderboard data yet
           </div>
         ) : (
           leaderboard.map((entry, index) => (
             <div
               key={entry.studentId}
-              className="grid grid-cols-12 px-5 py-4 border-b border-[#2a2a2a]
-                last:border-0 hover:bg-[#2a2a2a] transition-colors items-center"
+              className="grid grid-cols-12 px-5 py-4 border-b last:border-0 transition-colors items-center"
+              style={{ borderColor: "var(--border)" }}
             >
               <div className="col-span-1">
                 {index === 0 ? (
                   <Trophy size={18} className="text-yellow-400" />
                 ) : index === 1 ? (
-                  <Trophy size={18} className="text-gray-300" />
+                  <Trophy size={18} style={{ color: "var(--text-secondary)" }} />
                 ) : index === 2 ? (
                   <Trophy size={18} className="text-orange-400" />
                 ) : (
-                  <span className="text-gray-500 text-sm">{entry.rank}</span>
+                  <span className="text-sm" style={{ color: "var(--text-muted)" }}>{entry.rank}</span>
                 )}
               </div>
               <div className="col-span-4 flex items-center gap-3">
@@ -164,29 +165,29 @@ export default function AdminAnalyticsPage() {
                     {entry.studentName?.charAt(0)}
                   </span>
                 </div>
-                <span className="text-white text-sm font-medium truncate">
+                <span className="text-sm font-medium truncate" style={{ color: "var(--text-primary)" }}>
                   {entry.studentName}
                 </span>
               </div>
               <div className="col-span-3">
-                <span className="text-gray-400 text-sm truncate">
+                <span className="text-sm truncate" style={{ color: "var(--text-secondary)" }}>
                   {entry.cohortName}
                 </span>
               </div>
               <div className="col-span-2">
-                <span className="text-white text-sm font-semibold">
+                <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
                   {Math.round(entry.rating)}
                 </span>
               </div>
               <div className="col-span-2">
                 <div className="flex items-center gap-2">
-                  <div className="w-12 h-1.5 bg-[#3a3a3a] rounded-full overflow-hidden">
+                  <div className="w-12 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "var(--border)" }}>
                     <div
                       className="h-full bg-[#D32F2F] rounded-full"
                       style={{ width: `${entry.performanceScore || 0}%` }}
                     />
                   </div>
-                  <span className="text-gray-300 text-sm">
+                  <span className="text-sm" style={{ color: "var(--text-secondary)" }}>
                     {Math.round(entry.performanceScore || 0)}%
                   </span>
                 </div>

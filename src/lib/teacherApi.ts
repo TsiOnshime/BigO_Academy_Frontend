@@ -1,9 +1,12 @@
-import { academicApi } from "./api";
+import { academicApi, paymentApi } from "./api";
 
 // ── Teacher ───────────────────────────────────────────────────────────────
 
 export const getTeacher = (teacherId: string) =>
   academicApi.get(`/teachers/${teacherId}/`);
+
+export const getTeacherPayments = (teacherId: string) =>
+  paymentApi.get(`/payments/teachers/${teacherId}/`);
 
 // ── Students (teachers see only their assigned students) ──────────────────
 
@@ -59,3 +62,53 @@ export const updateMentorshipSession = (
   sessionId: string,
   data: { status?: string; notes?: string; scheduledAt?: string },
 ) => academicApi.patch(`/mentorship-sessions/${sessionId}/`, data);
+
+// ── Curriculum & Problems ──────────────────────────────────────────────────
+
+export const createTopic = (
+  cohortId: string,
+  data: {
+    title: string;
+    yearPhase: 1 | 2;
+    description?: string;
+    displayOrder?: number;
+  },
+) => academicApi.post(`/cohorts/${cohortId}/topics/`, data);
+
+export const updateTopic = (
+  topicId: string,
+  data: {
+    title?: string;
+    description?: string;
+    displayOrder?: number;
+  },
+) => academicApi.patch(`/topics/${topicId}/`, data);
+
+export const deleteTopic = (topicId: string) =>
+  academicApi.delete(`/topics/${topicId}/`);
+
+export const getTopicProblems = (topicId: string) =>
+  academicApi.get(`/topics/${topicId}/problems/`);
+
+export const addProblemToTopic = (
+  topicId: string,
+  data: {
+    title: string;
+    source: string;
+    externalUrl: string;
+    difficulty: "EASY" | "MEDIUM" | "HARD";
+  },
+) => academicApi.post(`/topics/${topicId}/problems/`, data);
+
+export const updateProblem = (
+  problemId: string,
+  data: {
+    title?: string;
+    externalUrl?: string;
+    difficulty?: "EASY" | "MEDIUM" | "HARD";
+  },
+) => academicApi.patch(`/problems/${problemId}/`, data);
+
+export const deleteProblem = (problemId: string) =>
+  academicApi.delete(`/problems/${problemId}/`);
+

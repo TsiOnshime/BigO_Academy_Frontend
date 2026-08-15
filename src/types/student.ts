@@ -18,6 +18,12 @@ export interface Student {
   yearPhase: YearPhase;
   cohortId: string | null;
   cohortName: string | null;
+  codeforcesHandle?: string | null;
+  codeforcesRating?: number;
+  codeforcesRank?: string;
+  codeforcesMaxRating?: number;
+  solvedCount?: number;
+  totalProblems?: number;
   assignedTeacherId: string | null;
   attendancePercentage: number;
   activeWarningCount: number;
@@ -37,6 +43,16 @@ export interface Topic {
   yearPhase: YearPhase;
   displayOrder: number;
   problemCount: number;
+  createdAt: string;
+}
+
+export interface Problem {
+  id: string;
+  topicId: string;
+  title: string;
+  source: "LEETCODE" | "CODEFORCES";
+  externalUrl: string;
+  difficulty: "EASY" | "MEDIUM" | "HARD";
   createdAt: string;
 }
 

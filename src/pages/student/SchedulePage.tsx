@@ -8,64 +8,11 @@ import type {
   MentorshipSessionStatus,
 } from "../../types/student";
 
-/** Flip to false once academic-service is reachable. */
-const DEV_MOCK_DATA = true;
-
 const STATUS_COLORS: Record<MentorshipSessionStatus, string> = {
   SCHEDULED: "bg-blue-400/10 text-blue-400",
   COMPLETED: "bg-green-400/10 text-green-400",
   CANCELLED: "bg-red-400/10 text-red-400",
 };
-
-function mockSessions(): MentorshipSession[] {
-  const now = Date.now();
-  return [
-    {
-      id: "s1",
-      teacherId: "t1",
-      teacherName: "Abel Getachew",
-      studentId: "1",
-      studentName: "Meron Tadesse",
-      scheduledAt: new Date(now + 86400000 * 2).toISOString(),
-      status: "SCHEDULED",
-      notes: null,
-      createdAt: new Date(now - 86400000 * 5).toISOString(),
-    },
-    {
-      id: "s2",
-      teacherId: "t1",
-      teacherName: "Abel Getachew",
-      studentId: "1",
-      studentName: "Meron Tadesse",
-      scheduledAt: new Date(now + 86400000 * 9).toISOString(),
-      status: "SCHEDULED",
-      notes: null,
-      createdAt: new Date(now - 86400000 * 3).toISOString(),
-    },
-    {
-      id: "s3",
-      teacherId: "t1",
-      teacherName: "Abel Getachew",
-      studentId: "1",
-      studentName: "Meron Tadesse",
-      scheduledAt: new Date(now - 86400000 * 6).toISOString(),
-      status: "COMPLETED",
-      notes: "Reviewed DP problem set, good progress on knapsack variants.",
-      createdAt: new Date(now - 86400000 * 12).toISOString(),
-    },
-    {
-      id: "s4",
-      teacherId: "t1",
-      teacherName: "Abel Getachew",
-      studentId: "1",
-      studentName: "Meron Tadesse",
-      scheduledAt: new Date(now - 86400000 * 13).toISOString(),
-      status: "CANCELLED",
-      notes: "Rescheduled due to conflict.",
-      createdAt: new Date(now - 86400000 * 15).toISOString(),
-    },
-  ];
-}
 
 export default function StudentSchedule() {
   const { user } = useAuth();
@@ -76,15 +23,14 @@ export default function StudentSchedule() {
   useEffect(() => {
     const fetchData = async () => {
       if (!user) return;
-
-      if (DEV_MOCK_DATA) {
-        setSessions(mockSessions());
+      const studentId = user.id || user.userId;
+      if (!studentId) {
         setIsLoading(false);
         return;
       }
 
       try {
-        const res = await getMyMentorshipSessions(user.userId);
+        const res = await getMyMentorshipSessions(studentId);
         setSessions(res.data.sessions || []);
       } catch {
         setError("Failed to load your schedule");

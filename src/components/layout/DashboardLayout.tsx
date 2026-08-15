@@ -5,7 +5,6 @@ import {
   Users,
   BookOpen,
   Calendar,
-  MessageSquare,
   Award,
   TrendingUp,
   Shield,
@@ -15,8 +14,11 @@ import {
   X,
   GraduationCap,
   CreditCard,
-  BarChart2
-
+  BarChart2,
+  Trophy,
+  UserCheck,
+  AlertTriangle,
+  User,
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -27,58 +29,37 @@ interface NavItem {
 }
 
 const studentNav: NavItem[] = [
-  {
-    label: "Dashboard",
-    path: "/dashboard",
-    icon: <LayoutDashboard size={20} />,
-  },
-  { label: "My Courses", path: "/courses", icon: <BookOpen size={20} /> },
-  { label: "Schedule", path: "/schedule", icon: <Calendar size={20} /> },
-  { label: "Messages", path: "/messages", icon: <MessageSquare size={20} /> },
-  { label: "Progress", path: "/progress", icon: <TrendingUp size={20} /> },
-  { label: "Certificates", path: "/certificates", icon: <Award size={20} /> },
+  { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={20} /> },
+  { label: "Curriculum", path: "/courses", icon: <BookOpen size={20} /> },
+  { label: "Progress Sheet", path: "/progress", icon: <TrendingUp size={20} /> },
+  { label: "Contests", path: "/contests", icon: <Trophy size={20} /> },
+  { label: "Leaderboard", path: "/leaderboard", icon: <Award size={20} /> },
+  { label: "Attendance", path: "/attendance", icon: <UserCheck size={20} /> },
+  { label: "One-on-One Sessions", path: "/schedule", icon: <Calendar size={20} /> },
   { label: "Payment", path: "/payment", icon: <CreditCard size={20} /> },
+  { label: "Profile", path: "/profile", icon: <User size={20} /> },
 ];
 
 const teacherNav: NavItem[] = [
-  { label: "Dashboard", path: "/teacher", icon: <LayoutDashboard size={20} /> },
-  {
-    label: "My Students",
-    path: "/teacher/students",
-    icon: <Users size={20} />,
-  },
-  {
-    label: "Mentorship",
-    path: "/teacher/mentorship",
-    icon: <MessageSquare size={20} />,
-  },
-  {
-    label: "Attendance",
-    path: "/teacher/attendance",
-    icon: <Calendar size={20} />,
-  },
+  { label: "Teacher Dashboard", path: "/teacher", icon: <LayoutDashboard size={20} /> },
+  { label: "Cohort Management", path: "/teacher/cohorts", icon: <BookOpen size={20} /> },
+  { label: "Attendance Management", path: "/teacher/attendance", icon: <Calendar size={20} /> },
+  { label: "Student Monitoring", path: "/teacher/students", icon: <Users size={20} /> },
+  { label: "Curriculum Management", path: "/teacher/curriculum", icon: <BookOpen size={20} /> },
+  { label: "One-on-One Scheduling", path: "/teacher/mentorship", icon: <Calendar size={20} /> },
+  { label: "Payment History", path: "/teacher/payments", icon: <CreditCard size={20} /> },
   { label: "Profile", path: "/teacher/profile", icon: <Settings size={20} /> },
 ];
 
 const adminNav: NavItem[] = [
-  { label: "Dashboard", path: "/admin", icon: <LayoutDashboard size={20} /> },
-  { label: "Students", path: "/admin/students", icon: <Users size={20} /> },
-  {
-    label: "Teachers",
-    path: "/admin/teachers",
-    icon: <GraduationCap size={20} />,
-  },
-  { label: "Cohorts", path: "/admin/cohorts", icon: <BookOpen size={20} /> },
-  {
-    label: "Payments",
-    path: "/admin/payments",
-    icon: <CreditCard size={20} />,
-  },
-  {
-    label: "Analytics",
-    path: "/admin/analytics",
-    icon: <BarChart2 size={20} />,
-  },
+  { label: "Admin Dashboard", path: "/admin", icon: <LayoutDashboard size={20} /> },
+  { label: "Cohort Management", path: "/admin/cohorts", icon: <BookOpen size={20} /> },
+  { label: "Teacher Management", path: "/admin/teachers", icon: <GraduationCap size={20} /> },
+  { label: "Student Management", path: "/admin/students", icon: <Users size={20} /> },
+  { label: "Analytics Dashboard", path: "/admin/analytics", icon: <BarChart2 size={20} /> },
+  { label: "Warning & Escalation", path: "/admin/warnings", icon: <AlertTriangle size={20} /> },
+  { label: "Payment Management", path: "/admin/payments", icon: <CreditCard size={20} /> },
+  { label: "Contest Management", path: "/admin/contests", icon: <Trophy size={20} /> },
   { label: "Security", path: "/admin/security", icon: <Shield size={20} /> },
   { label: "Settings", path: "/admin/settings", icon: <Settings size={20} /> },
 ];
@@ -113,7 +94,7 @@ function Sidebar({
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 left-0 h-full w-56 z-30
+          fixed top-0 left-0 h-full w-60 z-30
           bg-[#1e1e1e] border-r border-[#2a2a2a]
           flex flex-col
           transition-transform duration-300
@@ -139,59 +120,47 @@ function Sidebar({
           </button>
         </div>
 
-        {/* Nav links */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        {/* Navigation links */}
+        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
           {navItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
-              end={
-                item.path === "/dashboard" ||
-                item.path === "/teacher" ||
-                item.path === "/admin"
-              }
               onClick={onClose}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm
-                transition-colors ${
+                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-colors ${
                   isActive
-                    ? "bg-[#D32F2F]/20 text-[#D32F2F] font-medium"
+                    ? "bg-[#D32F2F] text-white"
                     : "text-gray-400 hover:text-white hover:bg-[#2a2a2a]"
                 }`
               }
             >
               {item.icon}
-              {item.label}
+              <span className="truncate">{item.label}</span>
             </NavLink>
           ))}
         </nav>
 
-        {/* User info + logout */}
-        <div className="px-3 py-4 border-t border-[#2a2a2a] space-y-1">
-          <div className="flex items-center gap-3 px-3 py-2">
-            <div className="w-8 h-8 rounded-full bg-[#D32F2F]/20 flex items-center justify-center flex-shrink-0">
-              <span className="text-[#D32F2F] text-xs font-bold">
-                {user?.fullName?.charAt(0).toUpperCase()}
-              </span>
+        {/* User profile section at bottom */}
+        <div className="p-4 border-t border-[#2a2a2a] flex items-center justify-between">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-8 h-8 rounded-full bg-[#D32F2F] flex items-center justify-center text-white font-bold text-xs shrink-0">
+              {user?.fullName?.charAt(0) || "U"}
             </div>
             <div className="min-w-0">
               <p className="text-white text-xs font-medium truncate">
                 {user?.fullName}
               </p>
-              <p className="text-gray-500 text-xs truncate capitalize">
-                {user?.role?.toLowerCase()}
-              </p>
+              <p className="text-gray-500 text-[11px] truncate">{user?.role}</p>
             </div>
           </div>
 
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
-              text-sm text-gray-400 hover:text-white hover:bg-[#2a2a2a]
-              transition-colors"
+            title="Log out"
+            className="text-gray-500 hover:text-[#D32F2F] transition-colors p-1"
           >
-            <LogOut size={20} />
-            Sign out
+            <LogOut size={16} />
           </button>
         </div>
       </aside>
@@ -199,15 +168,13 @@ function Sidebar({
   );
 }
 
-interface DashboardLayoutProps {
-  children: React.ReactNode;
-  title: string;
-}
-
 export default function DashboardLayout({
   children,
   title,
-}: DashboardLayoutProps) {
+}: {
+  children: React.ReactNode;
+  title: string;
+}) {
   const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -215,11 +182,11 @@ export default function DashboardLayout({
     user?.role === "ADMIN"
       ? adminNav
       : user?.role === "TEACHER"
-        ? teacherNav
-        : studentNav;
+      ? teacherNav
+      : studentNav;
 
   return (
-    <div className="flex h-screen bg-[#1a1a1a] overflow-hidden">
+    <div className="min-h-screen bg-[#121212] flex">
       <Sidebar
         navItems={navItems}
         isOpen={sidebarOpen}
@@ -227,22 +194,29 @@ export default function DashboardLayout({
       />
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Top navbar */}
-        <header className="flex items-center gap-4 px-6 py-4 border-b border-[#2a2a2a] bg-[#1e1e1e]">
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="text-gray-400 hover:text-white lg:hidden"
-          >
-            <Menu size={22} />
-          </button>
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Top header */}
+        <header className="h-16 border-b border-[#2a2a2a] bg-[#1a1a1a] flex items-center justify-between px-6 sticky top-0 z-10">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="text-gray-400 hover:text-white lg:hidden"
+            >
+              <Menu size={20} />
+            </button>
 
-          <h1 className="text-white font-semibold text-lg">{title}</h1>
+            <h1 className="text-lg font-semibold text-white">{title}</h1>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-gray-300 font-medium">
+              {user?.role}
+            </span>
+          </div>
         </header>
 
-        {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        {/* Content area */}
+        <main className="flex-1 p-6 overflow-y-auto">{children}</main>
       </div>
     </div>
   );
