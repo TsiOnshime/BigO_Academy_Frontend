@@ -71,8 +71,9 @@ export default function ChatBot() {
       const history = messages;
       const response = await sendMessage(history, text);
       setMessages([...updatedHistory, { role: "model", text: response }]);
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
+    } catch (err: any) {
+      console.error("Gemini error:", err);
+      setError(err?.message || "Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }
