@@ -7,7 +7,7 @@ const genAI = new GoogleGenerativeAI(apiKey);
 
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash",
+  model: "gemini-3.6-flash",
   systemInstruction: `You are BigO Bot, an expert DSA tutor for A2SV (Africa to Silicon Valley) students.
     
     Your role:
