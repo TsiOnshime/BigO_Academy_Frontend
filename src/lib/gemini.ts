@@ -7,8 +7,8 @@ const genAI = new GoogleGenerativeAI(apiKey);
 
 
 const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
-    systemInstruction: `You are BigO Bot, an expert DSA tutor for A2SV (Africa to Silicon Valley) students.
+  model: "gemini-2.0-flash",
+  systemInstruction: `You are BigO Bot, an expert DSA tutor for A2SV (Africa to Silicon Valley) students.
     
     Your role:
         - Help students understand Data Structures and Algorithms
@@ -22,7 +22,7 @@ const model = genAI.getGenerativeModel({
     - If asked anything outside DSA (politics, general chat, etc.) politely redirect: "I'm your DSA tutor! Ask me anything about algorithms or data structures.
     - Keep answers concise but complete - use bullet points and code blocks for clarity 
     - Never write the full solution to a LeetCode problem - guide the student to think through it`,
-})
+});
 
 export interface ChatMessage{
     role: "user" | "model"
