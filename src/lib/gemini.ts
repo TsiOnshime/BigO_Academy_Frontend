@@ -34,8 +34,15 @@ export async function sendMessage(
   history: ChatMessage[],
   newMessage: string,
 ): Promise<string> {
+  // Gemini requires history to start with a user message
+  // Filter out any leading model messages (like the greeting)
+  const validHistory = history.filter((_, index) => {
+    if (index === 0 && history[0].role === "model") return false;
+    return true;
+  });
+
   const chat = model.startChat({
-    history: history.map((msg) => ({
+    history: validHistory.map((msg) => ({
       role: msg.role,
       parts: [{ text: msg.text }],
     })),
