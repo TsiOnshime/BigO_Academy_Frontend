@@ -4,6 +4,7 @@ import { Users, Calendar, MessageSquare, TrendingUp } from "lucide-react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import { useAuth } from "../../hooks/useAuth";
 import { getMyStudents, getMentorshipSessions } from "../../lib/teacherApi";
+import { getCached, setCached } from "../../lib/cache";
 
 interface StatCardProps {
   label: string;
@@ -38,10 +39,23 @@ export default function TeacherDashboard() {
     const fetchData = async () => {
       if (!user) return;
       try {
+        const cached = getCached<any>("teacher-dashboard")
+        if (cached){
+          setStudents(cached.students)
+          setSessions(cached.sessions)
+          setIsLoading(false)
+          return
+        }
         const [studentsRes, sessionsRes] = await Promise.all([
           getMyStudents({ size: 100 }),
           getMentorshipSessions(user.userId),
         ]);
+
+        const data = {
+          students: studentsRes.data.students || [],
+          sessions: sessionsRes.data.sessions || []
+        }
+        setCached("teacher-dashboard", data)
         setStudents(studentsRes.data.students || []);
         setSessions(sessionsRes.data.sessions || []);
       } catch (err) {
