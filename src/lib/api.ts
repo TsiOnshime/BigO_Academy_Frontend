@@ -2,6 +2,7 @@ import axios from "axios";
 
 const AUTH_BASE_URL =
   import.meta.env.VITE_AUTH_SERVICE_URL || "http://localhost:8000/api/v1";
+const etagCache = new Map<string, string>()
 
 let isRefreshing = false;
 let failedQueue: Array<{
@@ -32,12 +33,23 @@ const createInstance = (baseURL: string) => {
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    const url = config.url || ""
+    const cachedEtag = etagCache.get(url)
+    if (cachedEtag){
+      config.headers["If-None-Match"] = cachedEtag
+    }
     return config;
   });
 
   // Handle 401 globally with auto-refresh
   instance.interceptors.response.use(
-    (response) => response,
+    (response) => {
+      const etag = response.headers["etag"]
+      if (etag && response.config.url){
+        etagCache.set(response.config.url, etag)
+      }
+      return response
+    },
     async (error) => {
       const originalRequest = error.config;
       const url = originalRequest?.url || "";
